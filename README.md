@@ -1,171 +1,176 @@
 <div align="center">
 
+**English** · [简体中文](README.zh-CN.md)
+
 # TARSBot
 
-**一个住在自己电脑里的常驻 AI 队友。**
+**An always-on AI teammate with a computer of its own.**
 
-它有自己的 Linux 桌面、浏览器和 shell，对话永不中断，危险操作先问你。
-你可以随时围观、接管，或者让它按时自己干活。
+It has its own Linux desktop, browser and shell. Its conversation never breaks, and risky actions wait for your OK.
+Watch it work, step in at any moment, or schedule it to work on its own.
 
 ![Node ≥ 22](https://img.shields.io/badge/node-%E2%89%A522-339933)
 ![Pi Durable 1.0.4](https://img.shields.io/badge/Pi%20Durable-1.0.4-6c5ce7)
 ![Self-hosted](https://img.shields.io/badge/self--hosted-127.0.0.1-informational)
 
-<img src="docs/images/ui-hero.png" alt="TARSBot：左边是 Bot 的对话与结论，右边是它正在操作的 Linux 桌面" width="100%">
+<img src="docs/images/ui-hero.png" alt="TARSBot: the bot's conversation and findings on the left, the Linux desktop it is operating on the right" width="100%">
 
 </div>
 
 ---
 
-大多数 AI 助手是一个对话框：关掉页面，它就忘了你；让它查个资料，它只能凭训练数据回答。
+Most AI assistants are a chat box: close the tab and it forgets you; ask it to look something up and it can only answer from training data.
 
-TARSBot 换了个思路——**给 AI 一台自己的电脑，再给它一条不会断的对话**。你把活交给它，它在自己的桌面里开浏览器、跑命令、写文件，做完告诉你结果；你可以看着它做，也可以随时插手。
+TARSBot takes a different approach: **give the AI a computer of its own, and a conversation that never breaks.** You hand it a job; it opens a browser, runs commands and writes files on its own desktop, then reports back. You can watch it do so, or step in whenever you like.
 
-## 它能做什么
+## What it can do
 
-### 🖥️ 它有自己的电脑
-每个 Bot 都能用一台容器化的 Linux 桌面（XFCE）：浏览器、终端、文件系统、登录态都在里面。它能点按钮、填表单、读网页，也能直接跑 shell 和读写文件。多个 Bot 共享同一台电脑，登录一次，大家都能用。
+### 🖥️ A computer of its own
+Every bot works on a containerized Linux desktop (XFCE): browser, terminal, file system and logged-in sessions all live there. It can click buttons, fill in forms and read web pages, as well as run shell commands and read and write files. Several bots share the same computer, so you sign in once and they can all use it.
 
-### 💬 一条永不断的对话
-每个 Bot 只有一条持久对话。服务重启、进程被 `kill -9`、容器重启，它都会从中断的地方接着干，而不是从头再来。对话太长时可以压缩；也可以随时搜索它的完整历史。
+### 💬 One conversation that never breaks
+Each bot has exactly one durable conversation. Restart the server, `kill -9` the process, restart the container: it picks up where it stopped instead of starting over. Long conversations can be compacted, and the full history stays searchable.
 
-### 👀 你始终在场
-- **围观**：网页右侧实时显示它的桌面，你的光标和它的光标互相独立。
-- **接管**：需要你登录、过验证码的时候，直接在桌面上动手，做完交还给它。
-- **纠偏**：它忙的时候，你可以插话改方向（steer）、排一条后续任务（queue），或者直接中止。
+### 👀 You are always in the loop
+- **Watch**: the desktop is streamed live on the right of the web UI. Your cursor and the bot's cursor are independent.
+- **Take over**: when a login or a CAPTCHA needs you, work directly on the desktop, then hand it back.
+- **Steer**: while the bot is busy you can change its course (steer), line up a follow-up (queue), or abort.
 
-### 🛡️ 危险操作先问你
-`rm -rf`、`git push`、会改动远端的 `curl`、格式化磁盘、关机，以及 `send_*` / `deploy*` 这类工具，都会先停在审批条上等你点头。批准的结果会跟着任务一起存下来，重启后不会重复问。
+### 🛡️ Risky actions ask first
+`rm -rf`, `git push`, `curl` calls that change remote state, disk formatting, shutdown, and tools named `send_*` / `deploy*` all stop at an approval bar until you say yes. The answer is stored with the task, so after a restart you are not asked again.
 
-### ⏰ 按时自己干活
-创建定时例程（routines），让 Bot 每隔一段时间自己执行一条指令。例程跨重启存活，错过的时间点只补一次，不会一下子连发。
+### ⏰ Works on a schedule
+Create routines to have a bot run an instruction every so often. Routines survive restarts, and missed slots are caught up once rather than fired in a burst.
 
-### 🌿 从任意一句话分叉
-对话里任何一条消息都能 **Fork**：新 Bot 继承分叉点之前的全部历史，可以换模型，也可以设成只读（只保留读取类工具）。适合“这个方向再试一次”，又不想弄脏原来的对话。
+### 🌿 Fork from any message
+Any message in a conversation can be **forked**: the new bot inherits the history up to that point, can use a different model, and can be read-only (it keeps only read-type tools). Handy for "try that direction again" without messing up the original conversation.
 
-### 🔎 能上网查资料
-内置网页搜索（Exa），查最新信息、文档和事实，不用靠模型记忆。
+### 🔎 Can search the web
+Built-in web search (Exa) for current information, documentation and facts, instead of relying on what the model remembers.
 
-## 看它工作
+## See it work
 
-每个动作在聊天里只占一行。回合结束后，中间过程自动折叠成一行 **Worked for 2m 45s**，只留下结论；展开能看到每一步，改过的文件会汇总成一张带 diff 的卡片。
+In the chat, every action takes a single line. When a turn ends, the steps in the middle fold into one **Worked for 2m 45s** row and only the conclusion stays; expand it to see each step. Files the bot changed are summarized in a card with diffs.
 
-<img src="docs/images/ui-details.png" alt="展开后的工具调用：命令、输出和文件 diff 各按类型渲染" width="100%">
+<img src="docs/images/ui-details.png" alt="Expanded tool calls: commands, output and file diffs, each rendered by tool type" width="100%">
 
-<sub>上图为组件画廊（`web/gallery.html`）里的示例数据，用来集中展示各类工具的渲染效果，不是一次真实运行。</sub>
+<sub>The image above uses sample data from the component gallery (`web/gallery.html`) to show the tool renderers side by side. It is not a real run.</sub>
 
-不同工具有各自的展示：Shell 显示命令与输出，Edit / Write 显示彩色 diff，网页搜索显示可点击的结果列表，桌面截图显示缩略图，点开可放大。
+Each tool has its own presentation: Shell shows the command and its output, Edit / Write show a colored diff, web search shows a list of clickable results, and desktop screenshots show thumbnails you can click to enlarge.
 
-## 我们实际验证过什么
+## What we have actually verified
 
-这些都有可重复的脚本和记录，不是口号：
+These come with repeatable scripts and records; they are not slogans:
 
-| 验证项 | 结果 | 怎么跑 |
+| Check | Result | How to run |
 |---|---|---|
-| 长任务进行中 `kill -9` 服务，重启后任务继续完成 | ✅ 通过 | `scripts/kill-test.sh` |
-| 重启 Space 容器后，Bot 继续执行命令 | ✅ 通过 | 同上 |
-| 服务和容器同时被杀，恢复后状态一致、能继续接任务 | ✅ 通过 | 同上 |
-| 重启容器后，文件和 Chromium 登录态（cookie）保持不变 | ✅ 通过 | 同上 |
-| 危险命令停在审批、批准后只执行一次 | ✅ 有测试 | `scripts/approval-test.sh` |
-| 定时例程跨重启仍然触发 | ✅ 有测试 | `scripts/routine-test.sh` |
+| `kill -9` the server during a long task; after restart the task completes | ✅ pass | `scripts/kill-test.sh` |
+| Restart the Space container; the bot keeps running commands | ✅ pass | same |
+| Kill the server and the container together; state is consistent after recovery and the bot accepts new tasks | ✅ pass | same |
+| After a container restart, files and the Chromium login state (cookie) are unchanged | ✅ pass | same |
+| A risky command stops at approval and runs once after it is approved | ✅ tested | `scripts/approval-test.sh` |
+| Scheduled routines still fire across restarts | ✅ tested | `scripts/routine-test.sh` |
 
-**桌面操控成功率**（3 个难度：读网页口令 / 表单登录 / 搜索商品并下单；66 次运行，`scripts/gui-bench.mjs`）：
+**Desktop-control success rate** (3 difficulty levels: read a code from a page / sign in with a form / search a product and place an order; 66 runs, `scripts/gui-bench.mjs`):
 
-| 模型 | 截图 + 无障碍树（默认） | 仅截图 |
+| Model | Screenshot + accessibility tree (default) | Screenshot only |
 |---|---|---|
 | claude-sonnet-5-5 | 11/11 | 10/11 |
 | glm-5.3 | 11/11 | 2/11 |
 | gpt-5.6-terra | 11/11 | 3/11 |
 
-结论：**给模型无障碍树（`desktop_elements`）是桌面操控稳定的关键**，TARSBot 默认就开着，并让模型优先用元素标识而不是像素坐标。
+Takeaway: **giving the model the accessibility tree (`desktop_elements`) is what makes desktop control reliable.** TARSBot enables it by default and tells the model to prefer element tokens over pixel coordinates.
 
-> 说明：每格只有 3–5 次运行，只能说明量级差异，不是统计结论；任务是我们自己搭的测试页，不代表任意真实网站。完整明细见 [`docs/gui-success.md`](docs/gui-success.md) 和 [`bench/conclusion.md`](bench/conclusion.md)。默认模型 `glm-5.3-flash` 没有单独跑过这组基准。
+> Note: each cell is only 3–5 runs, so this shows orders of magnitude, not statistical significance; the tasks run on test pages we built ourselves and do not represent arbitrary real websites. See [`docs/gui-success.md`](docs/gui-success.md) and [`bench/conclusion.md`](bench/conclusion.md) for the details (both in Chinese). The default model `glm-5.3-flash` was not run through this benchmark separately.
 
-## 快速开始
+## Quick start
 
-前置：Node ≥ 22，以及一个 Docker 运行时（macOS 上用 [OrbStack](https://orbstack.dev)）。
+Prerequisites: Node ≥ 22 and a Docker runtime (on macOS, [OrbStack](https://orbstack.dev)).
 
 ```bash
-orb start                                    # 启动 Docker
+orb start                                    # start Docker
 npm install && (cd web && npm install && npm run build)
-scripts/space-up.sh                          # 拉起 Bot 的电脑 tarsbot-space（127.0.0.1:3211）
-npm start                                    # 打开 http://127.0.0.1:8080
+scripts/space-up.sh                          # start the bots' computer, tarsbot-space (127.0.0.1:3211)
+npm start                                    # open http://127.0.0.1:8080
 ```
 
-在项目根目录创建 `.env`（不要提交）：
+Create a `.env` in the project root (never commit it):
 
-| 变量 | 作用 |
+| Variable | Purpose |
 |---|---|
-| `TOKEN_ROUTER_BASE_URL` | OpenAI 兼容的模型网关地址 |
-| `TOKEN_ROUTER_API_KEY` | 网关密钥 |
-| `EXA_API_KEY` | 网页搜索 |
+| `TOKEN_ROUTER_BASE_URL` | Base URL of an OpenAI-compatible model gateway |
+| `TOKEN_ROUTER_API_KEY` | Gateway key |
+| `EXA_API_KEY` | Web search |
 
-打开页面，点 **New bot**，给它一个任务就行。比如：
+Open the page, click **New bot** and give it a task. For example:
 
-> 在你的桌面上用 Chromium 打开 nodejs.org，查一下当前的 LTS 版本和发布日期，把结论写进 `/home/cua/work/node-lts.md`，再告诉我。
+> Use Chromium on your desktop to open nodejs.org, find the current LTS version and its release date, write the findings to `/home/cua/work/node-lts.md`, then tell me.
 
-### 常用配置
+### Common settings
 
-| 变量 | 默认 | 说明 |
+| Variable | Default | Notes |
 |---|---|---|
-| `TARSBOT_MODEL` | `glm-5.3-flash` | 新建 Bot 的默认模型；`glm-5.3`、`claude-sonnet-5-5`、`gpt-5.6-terra` 也可选 |
-| `TARSBOT_PORT` | `8080` | Web UI / API 端口 |
-| `TARSBOT_DATA_DIR` | `data/` | 对话、Bot 配置的存放位置 |
+| `TARSBOT_MODEL` | `glm-5.3-flash` | Default model for new bots; `glm-5.3`, `claude-sonnet-5-5` and `gpt-5.6-terra` also work |
+| `TARSBOT_PORT` | `8080` | Web UI / API port |
+| `TARSBOT_DATA_DIR` | `data/` | Where conversations and bot configuration are stored |
+| `TARSBOT_SPACE_RESOLUTION` | `1280x800` | Desktop resolution; read by `scripts/space-up.sh` when it creates the container |
 
-给已有 Bot 换模型：先停掉服务，再运行 `node scripts/set-model.mjs <bot> <modelId>`。
+To change the model of an existing bot: stop the server, then run `node scripts/set-model.mjs <bot> <modelId>`.
 
-命令行替代：`npm run repl`。它和服务共用同一个数据库，**两者不能同时运行**。
+Command-line alternative: `npm run repl`. It shares the database with the server, so **the two cannot run at the same time**.
 
-## 它是怎么搭起来的
+## How it is built
 
-- **[Pi Durable](https://github.com/earendil-works/pi/tree/main/packages/durable)**（`@earendil-works/pi-durable`）：持久对话、任务恢复和定时例程的底座。TARSBot 之所以能“断了接着干”，靠的就是它。
-- **[Cua](https://github.com/trycua/cua)**（`@trycua/cua`）：桌面与沙箱技术栈。Bot 的电脑是一个跑在本机 Docker 里的 Cua Space（XFCE + 浏览器 + 无障碍树驱动）。
-- **TARSBot 自己**：多 Bot 管理、Web 界面、审批、例程、分叉，以及把上面两者接起来的胶水。
+- **[Pi Durable](https://github.com/earendil-works/pi/tree/main/packages/durable)** (`@earendil-works/pi-durable`): the foundation for durable conversations, task recovery and scheduled routines. It is why TARSBot can pick up where it stopped.
+- **[Cua](https://github.com/trycua/cua)** (`@trycua/cua`): the computer-use and sandbox stack. A bot's computer is a Cua Space running in local Docker (XFCE + browser + accessibility-tree driver).
+- **TARSBot itself**: multi-bot management, the web UI, approvals, routines, forking, and the glue that ties the two together.
 
-后端是纯 ESM 的 Node.js，前端是 React 19 + Vite + Tailwind 4。聊天界面是一套可复用的组件库，位于 `web/src/components/Chat/`（原子组件 / 消息组件 / 按工具分类的渲染器），新增工具的展示只需注册一个渲染器。
+The backend is plain ESM Node.js; the frontend is React 19 + Vite + Tailwind 4. The chat UI is a reusable component library in `web/src/components/Chat/` (primitives / message parts / per-tool renderers); to show a new tool differently you only register a renderer.
 
-## 安全（用之前请先读）
+## Security (read this before you use it)
 
-TARSBot 默认是一个**只在本机使用**的工具：
+TARSBot is, by default, a tool for **local use only**:
 
-- Web UI / API（8080）和桌面代理（3299）**没有鉴权**，只绑定 `127.0.0.1`。要放到云主机上，必须先加鉴权，并且只通过 Tailscale 或私网访问。
-- **不要把 Space 的 3211 端口暴露到公网。**
-- 模型密钥只存在于宿主机的服务进程环境里，不会写进 Bot 的电脑。
-- Bot 的桌面里登录过的账号，对 Bot 是完全开放的：能用 `bash` 的主体，就拥有所有已登录应用的权限。审批只能拦住规则里列出的操作，不是万能的沙箱，规则见 `src/ext/approval.mjs`。
+- The web UI / API (8080) and the desktop proxy (3299) have **no authentication** and bind to `127.0.0.1` only. Before putting it on a cloud host you must add authentication and reach it only through Tailscale or a private network.
+- **Never expose the Space's port 3211 to the public internet.**
+- Model keys live only in the host server process's environment; they are not written into the bot's computer.
+- Every account signed in on a bot's desktop is fully open to that bot: anything that can run `bash` has the permissions of all logged-in apps. Approval only catches the actions listed in its rules; it is not a sandbox. See `src/ext/approval.mjs` for the rules.
 
-## 数据在哪里
+## Where your data lives
 
-| 位置 | 内容 |
+| Location | Contents |
 |---|---|
-| `data/alice.sqlite` | 全部对话与状态，**不要删除** |
-| `data/bots.json` | Bot 配置 |
-| `data/space.json` | Space 地址与访问令牌（权限 600） |
-| Docker 卷 `tarsbot-space-home` | Bot 电脑的 `/home/cua`，包含浏览器登录态 |
+| `data/alice.sqlite` | All conversations and state. **Do not delete.** |
+| `data/bots.json` | Bot configuration |
+| `data/space.json` | Space address and access token (mode 600) |
+| Docker volume `tarsbot-space-home` | The bot computer's `/home/cua`, including browser login state |
 
-备份：停服务 → 备份 `data/` → 需要保留登录态时再备份这个卷。
+Backup: stop the server → back up `data/` → also back up this volume if you want to keep the login state.
 
-## 开发
+## Development
 
 ```bash
-TARSBOT_NO_DOTENV=1 npm test     # 后端单元测试，离线
-npm run test:env                 # 执行环境一致性测试，需要 Space 在跑
-cd web && npm test               # 前端测试
-cd web && npm run dev            # 前端开发；访问 /gallery.html 可一次看遍所有消息与工具的渲染
+TARSBOT_NO_DOTENV=1 npm test     # backend unit tests, offline
+npm run test:env                 # execution-environment tests, needs the Space running
+cd web && npm test               # frontend tests
+cd web && npm run dev            # frontend dev server; open /gallery.html to see every message and tool rendered
 ```
 
-## 文档
+## Docs
 
-- 产品技术规范：[`DurableBot 产品技术规范（ASD-STE100） .md`](DurableBot%20产品技术规范（ASD-STE100）%20.md)
-- 系统设计：[`DurableBot 系统设计文档（Pi Durable + Cua Spaces） .md`](DurableBot%20系统设计文档（Pi%20Durable%20+%20Cua%20Spaces）%20.md)
-- 开发计划：[`docs/PLAN.md`](docs/PLAN.md)　接口契约：[`docs/CONTRACTS.md`](docs/CONTRACTS.md)
+These documents are written in Chinese:
 
-## 已知限制
+- Product specification: [`DurableBot 产品技术规范（ASD-STE100） .md`](DurableBot%20产品技术规范（ASD-STE100）%20.md)
+- System design: [`DurableBot 系统设计文档（Pi Durable + Cua Spaces） .md`](DurableBot%20系统设计文档（Pi%20Durable%20+%20Cua%20Spaces）%20.md)
+- Plan: [`docs/PLAN.md`](docs/PLAN.md)　Interface contracts: [`docs/CONTRACTS.md`](docs/CONTRACTS.md)
 
-- Pi Durable 目前处于实验阶段，API 可能变动（依赖已收敛在 `src/env.mjs`、`src/ext/`、`src/server.mjs` 三处）。
-- 桌面操控的成功率取决于模型；没有无障碍树的页面（如 canvas、远程桌面）要靠截图，成功率明显更低。
-- 存储只允许一个写进程，服务和命令行不能同时开。
-- 目前只在 macOS + OrbStack 上完整验证过；其他环境理论上只要能跑 Docker 即可，但没有验证。
+## Known limitations
 
-## 许可
+- Pi Durable is experimental and its API may change (the dependency is confined to `src/env.mjs`, `src/ext/` and `src/server.mjs`).
+- Desktop-control success depends on the model. Pages without an accessibility tree (canvas, remote desktops) fall back to screenshots, with a markedly lower success rate.
+- Storage allows a single writer process, so the server and the CLI cannot run together.
+- Fully verified on macOS + OrbStack only. Anything that can run Docker should work in theory, but that has not been verified.
 
-本仓库暂未附带许可证。依赖的 Cua Spaces 采用 FSL-1.1-MIT：自用与内部部署不受限，**禁止用本产品构建与 Cua 竞争的商业产品**。
+## License
+
+This repository does not ship a license yet. The dependency Cua Spaces is under FSL-1.1-MIT: personal use and internal deployment are unrestricted, but you **may not use this product to build a commercial product that competes with Cua**.
