@@ -47,16 +47,19 @@ export function Collapse({ open, children, className }: { open: boolean; childre
 
   if (phase === "closed") return null;
   const expanded = phase === "open";
-  const clip = !(expanded && settled);
+  const settledOpen = expanded && settled;
+  const clip = !settledOpen;
   return (
     <div
       ref={ref}
       onTransitionEnd={onEnd}
       inert={!expanded}
-      className={cx("grid transition-[grid-template-rows,opacity] duration-200 ease-out motion-reduce:transition-none", expanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0", className)}
+      // Once settled open, drop the transition: if the browser never ran it (background window, throttled timers) the
+      // computed height snaps to its final value instead of staying stuck at 0 while the clip is already off.
+      className={cx(!settledOpen && "transition-[grid-template-rows,opacity] duration-200 ease-out motion-reduce:transition-none", "grid grid-cols-[minmax(0,1fr)]", expanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0", className)}
       style={clip ? { contain: "layout paint" } : undefined}
     >
-      <div className={cx("min-h-0", clip && "overflow-hidden")}>{children}</div>
+      <div className={cx("min-h-0 min-w-0", clip && "overflow-hidden")}>{children}</div>
     </div>
   );
 }

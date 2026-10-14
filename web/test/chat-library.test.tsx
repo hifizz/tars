@@ -62,6 +62,26 @@ describe("feed derivation", () => {
     expect(fold && fold.type === "fold" && fold.rows).toHaveLength(2);
     expect(open.filter((r) => r.type === "part")).toHaveLength(2);
   });
+  it("keeps the intro before the fold and the answer after it, in chronological order", () => {
+    const parts: ChatMessage["parts"] = [
+      { type: "thinking", text: "plan" },
+      { type: "text", text: "On it." },
+      tool({ id: "1", args: { command: "ls" } }),
+      tool({ id: "2", args: { command: "pwd" } }),
+      { type: "text", text: "Done." },
+    ];
+    const rows = deriveFeed(turn(parts), { busy: false, expanded: new Set(["u"]) });
+    expect(rows.map((r) => (r.type === "part" ? r.part.type + ":" + (r.part.type === "text" ? r.part.text : "") : r.type))).toEqual(["message", "thinking:", "text:On it.", "fold", "text:Done."]);
+    const fold = rows.find((r) => r.type === "fold");
+    expect(fold && fold.type === "fold" && fold.rows.map((r) => (r.type === "part" ? r.part.type : r.type))).toEqual(["tool", "tool"]);
+  });
+  it("folds everything before the answer when tools come first (no intro)", () => {
+    const parts: ChatMessage["parts"] = [tool({ id: "1" }), { type: "text", text: "midway note" }, tool({ id: "2" }), { type: "text", text: "Done." }];
+    const rows = deriveFeed(turn(parts), { busy: false, expanded: new Set() });
+    expect(rows.map((r) => r.type)).toEqual(["message", "fold", "part"]);
+    const fold = rows[1];
+    expect(fold.type === "fold" && fold.rows).toHaveLength(3);
+  });
   it("does not fold when the turn does not end with an answer", () => {
     const rows = deriveFeed(turn([{ type: "text", text: "hm" }, tool({})]), { busy: false, expanded: new Set() });
     expect(rows.some((r) => r.type === "fold")).toBe(false);

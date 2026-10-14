@@ -89,15 +89,20 @@ export function deriveFeed(messages: ChatMessage[], opts: { busy: boolean; expan
     const tools = entries.flatMap((e) => (e.part.type === "tool" ? [e.part] : []));
     const live = (opts.busy && bi === lastTurn) || block.assistants.some((a) => a.pending);
 
-    // Fold: settled turn with a final answer, hiding everything between first and last text.
+    // Fold: a settled turn that ends with an answer hides one CONTIGUOUS run of steps behind "Worked for …".
+    // The run must be contiguous because the fold row owns its hidden rows (they are rendered inside it).
+    //   - turn opens with text (an intro) and has a final answer: keep both, hide what is between them;
+    //   - otherwise (tools/thinking first, or only one text): keep just the final answer, hide everything before it.
+    // Thinking before an intro stays visible; leading tools never do.
     const hidden = new Set<number>();
     const textIdx = entries.flatMap((e, i) => (e.part.type === "text" ? [i] : []));
-    const endsWithAnswer = entries.length > 0 && entries[entries.length - 1].part.type === "text";
+    const last = entries.length - 1;
+    const endsWithAnswer = last >= 0 && entries[last].part.type === "text";
     if (!live && endsWithAnswer && !tools.some((t) => t.status === "running")) {
-      const keep = new Set([textIdx[0], textIdx[textIdx.length - 1]]);
-      entries.forEach((e, i) => {
-        if (!keep.has(i) && e.part.type !== "image") hidden.add(i);
-      });
+      const first = textIdx[0];
+      const hasIntro = textIdx.length >= 2 && !entries.slice(0, first).some((e) => e.part.type === "tool");
+      const from = hasIntro ? first + 1 : 0;
+      for (let i = from; i < last; i++) hidden.add(i);
       if (![...hidden].some((i) => entries[i].part.type === "tool")) hidden.clear();
     }
     const hiddenSteps = [...hidden].filter((i) => entries[i].part.type === "tool").length;
