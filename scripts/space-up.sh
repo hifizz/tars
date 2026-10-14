@@ -13,6 +13,7 @@ DATA_DIR="${TARSBOT_DATA_DIR:-$ROOT/data}"
 STATE="$DATA_DIR/space.json"
 URL="http://127.0.0.1:$PORT"
 WAIT_S="${TARSBOT_SPACE_WAIT_S:-180}"
+RESOLUTION="${TARSBOT_SPACE_RESOLUTION:-1280x800}" # WxH, read by the image's start-desktop.sh as CUA_RESOLUTION
 
 mkdir -p "$DATA_DIR"
 
@@ -75,7 +76,7 @@ else
     -p "127.0.0.1:$PORT:3211" \
     -v "$VOLUME:/home/cua" \
     -e CUA_ENV_TOKEN \
-    -e DISPLAY=:1 -e CUA_X_SERVER=xvfb -e CUA_AUDIO=true \
+    -e DISPLAY=:1 -e CUA_X_SERVER=xvfb -e CUA_AUDIO=true -e "CUA_RESOLUTION=$RESOLUTION" \
     --label tarsbot.space=true \
     "$IMAGE" >/dev/null
 fi
