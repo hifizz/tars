@@ -196,7 +196,7 @@ export function createDesktopTools({ callDriver = defaultCallDriver } = {}) {
       const r = await run(callDriver, DRIVER_MAP.screenshot, screenshotArgs(args));
       const capture = r.structured?.capture_id;
       const head = textOf(r);
-      return { content: [...images(r), text(capture ? `${head}\ncapture_id: ${capture}` : head)] };
+      return { output: [...images(r), text(capture ? `${head}\ncapture_id: ${capture}` : head)] };
     },
   });
 
@@ -223,7 +223,7 @@ export function createDesktopTools({ callDriver = defaultCallDriver } = {}) {
           `Format: element_token role "label" = value @x,y wxh (window-local pixels).`
         : "";
       const body = list !== undefined ? `${head}\n${list || "(no labeled or interactive elements)"}` : textOf(r);
-      return { content: [...images(r), text(truncate(body))] };
+      return { output: [...images(r), text(truncate(body))] };
     },
   });
 
@@ -234,7 +234,7 @@ export function createDesktopTools({ callDriver = defaultCallDriver } = {}) {
     replay: "safe",
     async execute() {
       const r = await run(callDriver, DRIVER_MAP.windows, windowsArgs());
-      return { content: [text(textOf(r))] };
+      return { output: [text(textOf(r))] };
     },
   });
 
@@ -252,7 +252,7 @@ export function createDesktopTools({ callDriver = defaultCallDriver } = {}) {
     }),
     async execute(args) {
       const r = await run(callDriver, DRIVER_MAP.launch, launchArgs(args));
-      return { content: [text(textOf(r))] };
+      return { output: [text(textOf(r))] };
     },
   });
 
@@ -274,7 +274,7 @@ export function createDesktopTools({ callDriver = defaultCallDriver } = {}) {
     }),
     async execute(args) {
       const r = await run(callDriver, DRIVER_MAP.click, withDelivery(clickArgs(args), args));
-      return { content: [...images(r), text(textOf(r) || "clicked")] };
+      return { output: [...images(r), text(textOf(r) || "clicked")] };
     },
   });
 
@@ -292,7 +292,7 @@ export function createDesktopTools({ callDriver = defaultCallDriver } = {}) {
     }),
     async execute(args) {
       const r = await run(callDriver, DRIVER_MAP.type, withDelivery(typeArgs(args), args));
-      return { content: [text(textOf(r) || "typed")] };
+      return { output: [text(textOf(r) || "typed")] };
     },
   });
 
@@ -313,7 +313,7 @@ export function createDesktopTools({ callDriver = defaultCallDriver } = {}) {
     async execute(args) {
       const [tool, dargs] = keyCall(args);
       const r = await run(callDriver, tool, withDelivery(dargs, args));
-      return { content: [text(textOf(r) || "key sent")] };
+      return { output: [text(textOf(r) || "key sent")] };
     },
   });
 
@@ -332,7 +332,7 @@ export function createDesktopTools({ callDriver = defaultCallDriver } = {}) {
     }),
     async execute(args) {
       const r = await run(callDriver, DRIVER_MAP.scroll, withDelivery(scrollArgs(args), args));
-      return { content: [text(textOf(r) || "scrolled")] };
+      return { output: [text(textOf(r) || "scrolled")] };
     },
   });
 

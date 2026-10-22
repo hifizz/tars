@@ -10,7 +10,7 @@
 你可以随时围观、接管，或者让它按时自己干活。
 
 ![Node ≥ 22](https://img.shields.io/badge/node-%E2%89%A522-339933)
-![Pi Durable 1.0.4](https://img.shields.io/badge/Pi%20Durable-1.0.4-6c5ce7)
+![Pi Durable 1.4.0](https://img.shields.io/badge/Pi%20Durable-1.4.0-6c5ce7)
 ![Self-hosted](https://img.shields.io/badge/self--hosted-127.0.0.1-informational)
 
 <img src="docs/images/ui-hero.png" alt="TARSBot：左边是 Bot 的对话与结论，右边是它正在操作的 Linux 桌面" width="100%">
