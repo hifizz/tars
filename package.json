@@ -14,9 +14,9 @@
     "repl": "node src/repl.mjs"
   },
   "dependencies": {
-    "@earendil-works/chord": "1.0.4",
-    "@earendil-works/pi-ai": "1.0.4",
-    "@earendil-works/pi-durable": "1.0.4",
+    "@earendil-works/chord": "1.4.0",
+    "@earendil-works/pi-ai": "1.4.0",
+    "@earendil-works/pi-durable": "1.4.0",
     "@trycua/cua": "0.4.1",
     "ws": "8.22.0"
   },

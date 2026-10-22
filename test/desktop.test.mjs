@@ -64,10 +64,10 @@ test("desktop_screenshot: image + text with capture_id, default dimension", asyn
   const t = byName(createDesktopTools({ callDriver: m.callDriver }));
   const r = await t.desktop_screenshot.execute({}, API, ctx);
   assert.deepEqual(m.calls[0], { tool: DRIVER_MAP.screenshot, args: { max_image_dimension: 1024 } });
-  assert.deepEqual(r.content[0], { type: "image", data: "AAAA", mimeType: "image/png" });
-  assert.equal(r.content[1].type, "text");
-  assert.match(r.content[1].text, /window_id=2/);
-  assert.match(r.content[1].text, /capture_id: capture_abc/);
+  assert.deepEqual(r.output[0], { type: "image", data: "AAAA", mimeType: "image/png" });
+  assert.equal(r.output[1].type, "text");
+  assert.match(r.output[1].text, /window_id=2/);
+  assert.match(r.output[1].text, /capture_id: capture_abc/);
   await t.desktop_screenshot.execute({ max_image_dimension: 640 }, API, ctx);
   assert.equal(m.calls[1].args.max_image_dimension, 640);
 });
@@ -77,7 +77,7 @@ test("desktop_windows maps to list_windows on_screen_only", async () => {
   const t = byName(createDesktopTools({ callDriver: m.callDriver }));
   const r = await t.desktop_windows.execute({}, API, ctx);
   assert.deepEqual(m.calls[0], { tool: "list_windows", args: { on_screen_only: true } });
-  assert.match(r.content[0].text, /Example Domain/);
+  assert.match(r.output[0].text, /Example Domain/);
 });
 
 const ELS = {
@@ -103,7 +103,7 @@ test("desktop_elements: args, tree text, optional screenshot", async () => {
   const t = byName(createDesktopTools({ callDriver: m.callDriver }));
   const r = await t.desktop_elements.execute({ pid: 7, window_id: 8, query: "addr" }, API, ctx);
   assert.deepEqual(m.calls[0].args, { pid: 7, window_id: 8, query: "addr", include_accessibility_tree: true, include_screenshot: false });
-  assert.match(r.content.at(-1).text, /s00000001:2 entry/);
+  assert.match(r.output.at(-1).text, /s00000001:2 entry/);
   await t.desktop_elements.execute({ pid: 7, window_id: 8, screenshot: true }, API, ctx);
   assert.equal(m.calls[1].args.include_screenshot, true);
 });
@@ -113,7 +113,7 @@ test("desktop_elements truncates to ~12k chars", async () => {
   const m = mock({ get_window_state: { structured: { ...ELS, elements } } });
   const t = byName(createDesktopTools({ callDriver: m.callDriver }));
   const r = await t.desktop_elements.execute({ pid: 1, window_id: 2 }, API, ctx);
-  const txt = r.content.at(-1).text;
+  const txt = r.output.at(-1).text;
   assert.ok(txt.length < MAX_ELEMENTS_CHARS + 200, `len ${txt.length}`);
   assert.match(txt, /truncated/);
 });
@@ -122,7 +122,7 @@ test("desktop_elements falls back to driver text without structured elements", a
   const m = mock({ get_window_state: { text: "- [0] frame", structured: undefined } });
   const t = byName(createDesktopTools({ callDriver: m.callDriver }));
   const r = await t.desktop_elements.execute({ pid: 1, window_id: 2 }, API, ctx);
-  assert.equal(r.content.at(-1).text, "- [0] frame");
+  assert.equal(r.output.at(-1).text, "- [0] frame");
 });
 
 test("launchArgs: name+urls passes URLs as arguments; urls alone uses urls", () => {

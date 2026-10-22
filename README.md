@@ -10,7 +10,7 @@ It has its own Linux desktop, browser and shell. Its conversation never breaks, 
 Watch it work, step in at any moment, or schedule it to work on its own.
 
 ![Node ≥ 22](https://img.shields.io/badge/node-%E2%89%A522-339933)
-![Pi Durable 1.0.4](https://img.shields.io/badge/Pi%20Durable-1.0.4-6c5ce7)
+![Pi Durable 1.4.0](https://img.shields.io/badge/Pi%20Durable-1.4.0-6c5ce7)
 ![Self-hosted](https://img.shields.io/badge/self--hosted-127.0.0.1-informational)
 
 <img src="docs/images/ui-hero.png" alt="TARSBot: the bot's conversation and findings on the left, the Linux desktop it is operating on the right" width="100%">

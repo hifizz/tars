@@ -20,7 +20,7 @@
 | 前端 | React + Vite + Tailwind v4；严格分层（见 §5.3），后续可平滑替换为 ai-elements |
 | 网络搜索 | 自建 `web_search` 工具，使用 Exa（`EXA_API_KEY`），`replay:"safe"` |
 | 模型接入 | OpenRouter（`openrouterProvider`） |
-| 版本锁定 | pi-durable / pi-ai / chord `1.0.4`，`@trycua/cua` `0.4.1`（精确版本） |
+| 版本锁定 | pi-durable / pi-ai / chord `1.4.0`，`@trycua/cua` `0.4.1`（精确版本） |
 | 范围外 | 多租户、ACP、Teleport、云迁移（WP10） |
 
 ## 3. 前置条件
@@ -229,7 +229,7 @@ flowchart LR
 | 风险 | 缓解 |
 |---|---|
 | GUI 成功率低 | 无障碍树优先；必要时降级为 shell 型 Bot |
-| pi-durable 实验性 API | 锁定 1.0.4；依赖收敛在 harness/env/ext/api |
+| pi-durable 实验性 API | 锁定 1.4.0；依赖收敛在 harness/env/ext/api |
 | Cua 签名漂移 | 先跑探针（Task 2），映射表吸收差异 |
 | `env.mjs` 卡壳 | 两轮失败即降级为只开放 bash |
 | worker 产出偏离契约 | 每阶段编排者复核；fail 文档熔断 |

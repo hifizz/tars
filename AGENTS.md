@@ -9,7 +9,7 @@ TARSBot 是基于 Pi Durable（`@earendil-works/pi-durable`）的自托管常驻
   - 例外：包名、环境变量、代码标识符按其原有大小写：`@trycua/cua`、`CUA_SPACE_URL`、`CUA_ENV_TOKEN`、`cua-spacesd`。
 - **Cua Space**：Cua 体系中的一个资源类型（在 sandbox 之上叠加桌面 / driver / presence 等能力）。它是一个具体概念，**不等于 Cua 技术本身**。
 - 不要以"Cua Space"指代 Cua 整体；讨论部署形态时应先明确走的是 SDK 哪条路径（见下文分层）。
-- **Pi Durable**：持久对话、任务恢复、定时例程的底座（`@earendil-works/pi-durable` 1.0.4，API 处于实验阶段）。
+- **Pi Durable**：持久对话、任务恢复、定时例程的底座（`@earendil-works/pi-durable` 1.4.0，API 处于实验阶段）。
 
 ## Cua 技术栈分层
 
